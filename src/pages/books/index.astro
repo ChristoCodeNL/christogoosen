@@ -1,0 +1,85 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { SITE_TITLE } from '../../consts';
+
+const books = (await getCollection('books'))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={`Books — ${SITE_TITLE}`} description="Book reviews." />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <h1>Books</h1>
+      <ol class="book-list">
+        {books.map((book) => (
+          <li>
+            <a href={`/books/${book.id}/`}>
+              <span class="book-title">{book.data.title}</span>
+              <span class="book-author">{book.data.author}</span>
+              <span class="book-rating">{'★'.repeat(book.data.rating)}{'☆'.repeat(5 - book.data.rating)}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style>
+  h1 { margin-bottom: 2.5rem; }
+
+  .book-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .book-list li { border-bottom: 1px solid var(--border); }
+
+  .book-list li a {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 0 1.5rem;
+    padding: 1.25rem 0;
+    text-decoration: none;
+    color: var(--text);
+    align-items: baseline;
+  }
+
+  .book-list li a:hover .book-title { color: var(--accent); }
+
+  .book-title {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+  }
+
+  .book-author {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .book-rating {
+    font-size: 0.75rem;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 480px) {
+    .book-list li a {
+      grid-template-columns: 1fr auto;
+      grid-template-rows: auto auto;
+    }
+    .book-author { grid-column: 1; grid-row: 2; }
+    .book-rating { grid-column: 2; grid-row: 1; }
+  }
+</style>

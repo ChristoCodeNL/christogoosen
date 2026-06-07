@@ -1,0 +1,80 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import Header from '../../components/Header.astro';
+import { SITE_TITLE } from '../../consts';
+
+export async function getStaticPaths() {
+  const books = await getCollection('books');
+  return books.map((book) => ({
+    params: { slug: book.id },
+    props: book,
+  }));
+}
+
+type Props = Awaited<ReturnType<typeof getCollection<'books'>>>[number];
+
+const book = Astro.props;
+const { Content } = await render(book);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={`${book.data.title} — ${SITE_TITLE}`} description={book.data.description} />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <article class="prose">
+        <header class="book-header">
+          <h1>{book.data.title}</h1>
+          <p class="book-meta">
+            <span class="author">{book.data.author}</span>
+            <span class="rating">{'★'.repeat(book.data.rating)}{'☆'.repeat(5 - book.data.rating)}</span>
+          </p>
+          <p class="review-date"><FormattedDate date={book.data.pubDate} /></p>
+        </header>
+        <Content />
+      </article>
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .book-header {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  h1 { margin-bottom: 0.5rem; }
+
+  .book-meta {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin: 0 0 0.5rem;
+  }
+
+  .author {
+    font-style: italic;
+    color: var(--text-muted);
+  }
+
+  .rating {
+    font-size: 0.85rem;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+
+  .review-date {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .prose :global(p) { margin-bottom: 1.5rem; }
+</style>
