@@ -5,5 +5,6 @@ import { defineConfig } from 'astro/config';
 
 export default defineConfig({
   site: 'https://christogoosen.com',
+  output: 'static',
   integrations: [mdx(), sitemap()],
 });
