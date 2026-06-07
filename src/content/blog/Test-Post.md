@@ -1,6 +1,10 @@
-title: 'First Test Post'
-description: 'Testing the obsidian markdown workflow'
+---
+title: Test Post please ignore
+description: Hello World is appropriate?
 pubDate: 2026-06-07
+---
+
+Your content here.
 
 ### Test Post Header
 ##### Test post subtitle

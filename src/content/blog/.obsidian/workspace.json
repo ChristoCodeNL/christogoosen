@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Test Post.md",
+                "file": "Test-Post.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Test Post"
+              "title": "Test-Post"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Test Post.md",
+                "file": "Test-Post.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for Test Post"
+              "title": "Backlinks for Test-Post"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Test Post.md",
+                "file": "Test-Post.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from Test Post"
+              "title": "Outgoing links from Test-Post"
             }
           },
           {
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Test Post.md",
+                "file": "Test-Post.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of Test Post"
+              "title": "Outline of Test-Post"
             }
           }
         ]
@@ -185,6 +185,6 @@
   },
   "active": "295c2ccab7932045",
   "lastOpenFiles": [
-    "Test Post.md"
+    "Test-Post.md"
   ]
 }
