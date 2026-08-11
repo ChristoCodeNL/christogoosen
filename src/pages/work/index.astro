@@ -1,0 +1,144 @@
+---
+import { getCollection } from 'astro:content';
+import Arrow from '../../components/Arrow.astro';
+import ContentCard from '../../components/ContentCard.astro';
+import HeroArt from '../../components/HeroArt.astro';
+import Base from '../../layouts/Base.astro';
+import { CONTACT_EMAIL, SITE_TITLE } from '../../consts';
+
+// Case studies live in the same collection as essays, tagged `category: Case study`.
+const studies = (await getCollection('blog'))
+  .filter((p) => !p.data.draft && p.data.category === 'Case study')
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const description =
+  'Case studies, speaking and advisory work on product strategy, operating models and internal platforms.';
+---
+<Base
+  title={`Work — ${SITE_TITLE}`}
+  description={description}
+  quote="Strategy that never reaches an operating model is just a document."
+>
+  <section class="hero">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="t-eyebrow">Work</p>
+        <h1 class="t-hero">Built, shipped, learned from<span class="dot">.</span></h1>
+        <p class="t-intro lede">{description}</p>
+        <a class="btn" href={`mailto:${CONTACT_EMAIL}`}>Get in touch <Arrow /></a>
+      </div>
+      <div class="hero-media"><HeroArt /></div>
+    </div>
+  </section>
+
+  <section class="shell list">
+    <div class="section-head">
+      <h2 class="t-section-label">Case studies</h2>
+    </div>
+
+    {studies.length > 0 ? (
+      <div class="grid">
+        {studies.map((s) => (
+          <ContentCard
+            href={`/essays/${s.id}/`}
+            category="Case study"
+            title={s.data.title}
+            description={s.data.description}
+            cta="View case study"
+            image={s.data.heroImage}
+          />
+        ))}
+      </div>
+    ) : (
+      <div class="empty">
+        <p class="t-card-title">No case studies published yet</p>
+        <p class="t-card-desc">
+          The first ones are being written. To publish one, add a post to the blog collection with
+          <code>category: Case study</code> in the frontmatter and it will appear here.
+        </p>
+      </div>
+    )}
+
+    <div class="offer">
+      <div class="offer-item">
+        <p class="t-newsletter">Speaking</p>
+        <p class="t-card-desc">
+          Talks on operating models, internal platforms and product leadership in complex operations.
+        </p>
+      </div>
+      <div class="offer-item">
+        <p class="t-newsletter">Advisory</p>
+        <p class="t-card-desc">
+          Short engagements with product teams working through strategy, structure or scale problems.
+        </p>
+      </div>
+      <div class="offer-item">
+        <p class="t-newsletter">Get in touch</p>
+        <p class="t-card-desc">
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    background: var(--card);
+    border-bottom: 1px solid var(--divider);
+    padding-left: max(var(--gutter), calc((100% - var(--shell)) / 2 + var(--gutter)));
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 460px) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--s-8);
+  }
+  .hero-copy { display: grid; justify-items: start; gap: var(--s-4); padding-block: var(--s-8); }
+  .hero-copy .lede { max-width: 44ch; }
+  .dot { color: var(--blue); }
+  .hero-media { align-self: stretch; min-height: 320px; display: grid; }
+
+  .list { padding-block: var(--s-7) var(--s-8); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-4);
+  }
+
+  .empty {
+    display: grid;
+    gap: var(--s-2);
+    background: var(--card);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    padding: var(--s-6);
+    max-width: 60ch;
+  }
+  .empty code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.9em;
+    background: var(--blue-tint);
+    padding: 1px 5px;
+  }
+
+  .offer {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-6);
+    margin-top: var(--s-8);
+    padding-top: var(--s-6);
+    border-top: 1px solid var(--divider);
+  }
+  .offer-item { display: grid; gap: var(--s-2); align-content: start; }
+  .offer a { text-decoration: underline; text-underline-offset: 3px; }
+
+  @media (max-width: 980px) {
+    .hero { padding-right: var(--gutter); }
+    .hero-grid { grid-template-columns: 1fr; gap: var(--s-6); }
+    .hero-copy { padding-block: var(--s-7) 0; }
+    .hero-media { min-height: 220px; margin-bottom: var(--s-7); }
+    .grid, .offer { grid-template-columns: 1fr; }
+  }
+</style>

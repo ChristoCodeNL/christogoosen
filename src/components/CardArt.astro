@@ -1,0 +1,57 @@
+---
+// Quiet geometric stand-in used when a card has no image yet.
+// Deterministic: the same title always renders the same composition, so the
+// grid does not reshuffle between builds. Replace by adding `heroImage` or
+// `cover` to the frontmatter.
+interface Props {
+  seed: string;
+  label?: string;
+}
+
+const { seed, label } = Astro.props;
+
+let hash = 0;
+for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+
+const variant = hash % 4;
+const cx = 30 + (hash % 40);
+const cy = 30 + ((hash >> 3) % 40);
+---
+<div class="card-art" role="img" aria-label={label ?? ''}>
+  <svg viewBox="0 0 100 70" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    {variant === 0 && (
+      <>
+        <circle cx={cx} cy={cy} r="26" fill="var(--blue-tint)" />
+        <circle cx={cx + 14} cy={cy + 6} r="26" fill="none" stroke="var(--border)" />
+      </>
+    )}
+    {variant === 1 && (
+      <>
+        <rect x="10" y="12" width="52" height="46" fill="var(--blue-tint)" />
+        <path d="M62 12 L90 58" stroke="var(--border)" fill="none" />
+        <path d="M10 58 L90 12" stroke="var(--border)" fill="none" />
+      </>
+    )}
+    {variant === 2 && (
+      <>
+        <ellipse cx="50" cy="35" rx="34" ry="20" fill="var(--blue-tint)" />
+        <ellipse cx="50" cy="35" rx="46" ry="28" fill="none" stroke="var(--border)" />
+      </>
+    )}
+    {variant === 3 && (
+      <>
+        <path d="M0 52 Q 25 22 50 40 T 100 26" fill="none" stroke="var(--blue-tint)" stroke-width="10" />
+        <path d="M0 60 Q 25 30 50 48 T 100 34" fill="none" stroke="var(--border)" />
+      </>
+    )}
+  </svg>
+</div>
+
+<style>
+  .card-art {
+    background: var(--page);
+    aspect-ratio: 10 / 7;
+    overflow: hidden;
+  }
+  .card-art svg { width: 100%; height: 100%; display: block; }
+</style>

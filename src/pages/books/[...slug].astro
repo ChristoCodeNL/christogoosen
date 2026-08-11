@@ -1,80 +1,92 @@
 ---
-import { getCollection, render } from 'astro:content';
-import BaseHead from '../../components/BaseHead.astro';
-import Footer from '../../components/Footer.astro';
+import { Image } from 'astro:assets';
+import { type CollectionEntry, getCollection, render } from 'astro:content';
+import Arrow from '../../components/Arrow.astro';
 import FormattedDate from '../../components/FormattedDate.astro';
-import Header from '../../components/Header.astro';
+import Rating from '../../components/Rating.astro';
+import Base from '../../layouts/Base.astro';
 import { SITE_TITLE } from '../../consts';
 
 export async function getStaticPaths() {
-  const books = await getCollection('books');
+  const books = (await getCollection('books')).filter((b) => !b.data.draft);
   return books.map((book) => ({
     params: { slug: book.id },
     props: book,
   }));
 }
 
-type Props = Awaited<ReturnType<typeof getCollection<'books'>>>[number];
+type Props = CollectionEntry<'books'>;
 
 const book = Astro.props;
 const { Content } = await render(book);
 ---
-<!doctype html>
-<html lang="en">
-  <head>
-    <BaseHead title={`${book.data.title} — ${SITE_TITLE}`} description={book.data.description} />
-  </head>
-  <body>
-    <Header />
-    <main>
-      <article class="prose">
-        <header class="book-header">
-          <h1>{book.data.title}</h1>
-          <p class="book-meta">
-            <span class="author">{book.data.author}</span>
-            <span class="rating">{'★'.repeat(book.data.rating)}{'☆'.repeat(5 - book.data.rating)}</span>
-          </p>
-          <p class="review-date"><FormattedDate date={book.data.pubDate} /></p>
-        </header>
+<Base
+  title={`${book.data.title} by ${book.data.author} — ${SITE_TITLE}`}
+  description={book.data.description}
+  ogType="article"
+  quote="Good books don't just inform. They recalibrate how you see problems and what's possible."
+>
+  <article class="review shell">
+    <header class:list={["head", { "head--nocover": !book.data.cover }]}>
+      {book.data.cover && (
+        <div class="cover">
+          <Image src={book.data.cover} alt={`Cover of ${book.data.title}`} width={340} height={480} />
+        </div>
+      )}
+      <div class="meta">
+        <p class="t-category">Book review</p>
+        <h1>{book.data.title}</h1>
+        <p class="author">{book.data.author}</p>
+        <Rating value={book.data.rating} />
+        <p class="t-intro standfirst">{book.data.description}</p>
+        <p class="t-footer"><FormattedDate date={book.data.pubDate} /></p>
+      </div>
+    </header>
+
+    <div class="body">
+      <div class="prose">
         <Content />
-      </article>
-    </main>
-    <Footer />
-  </body>
-</html>
+      </div>
+
+      <hr class="rule" />
+
+      <a class="link" href="/books"><span>All reviews</span> <Arrow /></a>
+    </div>
+  </article>
+</Base>
 
 <style>
-  .book-header {
-    margin-bottom: 2.5rem;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid var(--border);
+  .review { padding-block: var(--s-8); }
+
+  .head {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: var(--s-7);
+    align-items: start;
+    padding-bottom: var(--s-7);
+    border-bottom: 1px solid var(--divider);
   }
 
-  h1 { margin-bottom: 0.5rem; }
+  .head--nocover { grid-template-columns: 1fr; }
 
-  .book-meta {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    margin: 0 0 0.5rem;
+  .cover {
+    border: 1px solid var(--divider);
+    background: var(--card);
+    overflow: hidden;
   }
+  .cover :global(img) { width: 100%; height: auto; }
 
-  .author {
-    font-style: italic;
-    color: var(--text-muted);
+  .meta { display: grid; gap: var(--s-3); justify-items: start; max-width: 56ch; }
+  .meta h1 { font-size: 36px; line-height: 1.05; letter-spacing: -0.035em; }
+  .author { font-size: 15px; color: var(--grey); }
+  .standfirst { color: var(--charcoal); }
+
+  .body { max-width: var(--prose); margin-top: var(--s-7); }
+  .body .rule { margin-block: var(--s-7) var(--s-5); }
+
+  @media (max-width: 720px) {
+    .head { grid-template-columns: 1fr; gap: var(--s-5); }
+    .cover { max-width: 160px; }
+    .meta h1 { font-size: 28px; }
   }
-
-  .rating {
-    font-size: 0.85rem;
-    color: var(--accent);
-    letter-spacing: 0.05em;
-  }
-
-  .review-date {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    margin: 0;
-  }
-
-  .prose :global(p) { margin-bottom: 1.5rem; }
 </style>

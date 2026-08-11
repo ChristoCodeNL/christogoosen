@@ -1,0 +1,23 @@
+---
+interface Props {
+  value: number;
+}
+const { value } = Astro.props;
+const steps = [1, 2, 3, 4, 5];
+---
+<p class="rating">
+  <span class="sr-only">{value} out of 5</span>
+  {steps.map((s) => <i class:list={{ on: s <= value }} aria-hidden="true"></i>)}
+</p>
+
+<style>
+  .rating { display: inline-flex; gap: 5px; align-items: center; }
+  .rating i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    display: block;
+  }
+  .rating i.on { background: var(--blue); border-color: var(--blue); }
+</style>

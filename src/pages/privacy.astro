@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro';
+import { CONTACT_EMAIL, SITE_TITLE } from '../consts';
+---
+<Base title={`Privacy — ${SITE_TITLE}`} description="How this site handles your data.">
+  <section class="page shell">
+    <p class="t-eyebrow">Privacy</p>
+    <h1>What this site does with your data</h1>
+
+    <div class="prose">
+      <p>
+        This is a personal website. It is a set of static files served from Cloudflare Pages. There
+        are no advertising trackers, no third-party analytics scripts and no accounts.
+      </p>
+
+      <h2>What is collected</h2>
+      <p>
+        Cloudflare records standard request logs, including IP address, user agent and requested
+        URL, to serve and protect the site. Google Fonts is used to load the two typefaces, which
+        means your browser makes a request to Google's servers when you load a page.
+      </p>
+
+      <h2>The newsletter</h2>
+      <p>
+        If you subscribe, your email address is stored by the newsletter provider for the sole
+        purpose of sending you posts. It is not sold or shared. Every email includes an unsubscribe
+        link, and unsubscribing deletes your address from the list.
+      </p>
+
+      <h2>Getting in touch</h2>
+      <p>
+        For anything about your data, email <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+      </p>
+
+      <p class="note">Replace this page with your own wording before you start collecting emails.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page {
+    max-width: calc(var(--prose) + var(--gutter) * 2);
+    margin-inline: auto;
+    padding-block: var(--s-8);
+    display: grid;
+    gap: var(--s-3);
+  }
+  h1 { font-size: 36px; line-height: 1.05; letter-spacing: -0.035em; margin-bottom: var(--s-5); }
+  .note { color: var(--grey); font-size: 14px; }
+</style>

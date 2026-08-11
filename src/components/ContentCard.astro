@@ -1,0 +1,92 @@
+---
+import { Image } from 'astro:assets';
+import Arrow from './Arrow.astro';
+import CardArt from './CardArt.astro';
+
+interface Props {
+  href: string;
+  category: string;
+  title: string;
+  description?: string;
+  meta?: string;
+  cta?: string;
+  image?: ImageMetadata;
+}
+
+const { href, category, title, description, meta, cta = 'Read', image } = Astro.props;
+---
+<article class="card">
+  <a class="hit" href={href}>
+    <span class="sr-only">{title}</span>
+  </a>
+
+  <div class="media">
+    {image ? (
+      <Image src={image} alt="" width={480} height={336} />
+    ) : (
+      <CardArt seed={title} />
+    )}
+  </div>
+
+  <div class="body">
+    <p class="t-category">{category}</p>
+    <h3 class="t-card-title">{title}</h3>
+    {meta && <p class="meta">{meta}</p>}
+    {description && <p class="t-card-desc desc">{description}</p>}
+  </div>
+
+  <p class="link foot"><span>{cta}</span> <Arrow /></p>
+</article>
+
+<style>
+  .card {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: var(--s-3);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--s-4);
+    transition: border-color 0.18s var(--ease), transform 0.18s var(--ease);
+  }
+
+  .card:hover { border-color: var(--blue); }
+  .card:hover .foot svg { transform: translateX(4px); }
+  .card:has(.hit:focus-visible) { border-color: var(--blue); }
+
+  .hit { position: absolute; inset: 0; z-index: 1; border-radius: var(--radius); }
+
+  .media {
+    overflow: hidden;
+    background: var(--page);
+    aspect-ratio: 10 / 7;
+  }
+  .media :global(img) { width: 100%; height: 100%; object-fit: cover; }
+
+  .body { display: grid; gap: var(--s-2); align-content: start; }
+
+  .meta {
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--grey);
+  }
+
+  .desc { color: var(--charcoal); }
+
+  .foot { margin-top: var(--s-2); }
+
+  /* Mobile: the design switches to a horizontal row. */
+  @media (max-width: 720px) {
+    .card {
+      grid-template-columns: 96px 1fr auto;
+      grid-template-rows: auto;
+      align-items: center;
+      gap: var(--s-4);
+      padding: var(--s-4) var(--s-4);
+    }
+    .media { aspect-ratio: 1 / 1; }
+    .foot { margin-top: 0; }
+    .foot span { display: none; }
+  }
+</style>

@@ -1,0 +1,97 @@
+---
+import { getCollection } from 'astro:content';
+import ContentCard from '../../components/ContentCard.astro';
+import HeroArt from '../../components/HeroArt.astro';
+import Base from '../../layouts/Base.astro';
+import { SITE_TITLE } from '../../consts';
+
+const posts = (await getCollection('blog'))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const description =
+  'Essays and field notes on product strategy, operating models, AI and leadership.';
+---
+<Base
+  title={`Essays — ${SITE_TITLE}`}
+  description={description}
+  quote="Writing is how you find out whether you actually understood the problem."
+>
+  <section class="hero">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="t-eyebrow">Essays</p>
+        <h1 class="t-hero">Thinking out loud<span class="dot">.</span></h1>
+        <p class="t-intro lede">{description}</p>
+      </div>
+      <div class="hero-media"><HeroArt /></div>
+    </div>
+  </section>
+
+  <section class="list shell">
+    {posts.length > 0 ? (
+      <div class="grid">
+        {posts.map((post) => (
+          <ContentCard
+            href={`/essays/${post.id}/`}
+            category={post.data.category}
+            title={post.data.title}
+            description={post.data.description}
+            meta={post.data.pubDate.toLocaleDateString('en-GB', {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric',
+            })}
+            cta={post.data.category === 'Essay' ? 'Read essay' : 'Read note'}
+            image={post.data.heroImage}
+          />
+        ))}
+      </div>
+    ) : (
+      <p class="t-card-desc empty">No essays published yet.</p>
+    )}
+  </section>
+</Base>
+
+<style>
+  .hero {
+    background: var(--card);
+    border-bottom: 1px solid var(--divider);
+    padding-left: max(var(--gutter), calc((100% - var(--shell)) / 2 + var(--gutter)));
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--s-8);
+  }
+
+  .hero-copy { display: grid; gap: var(--s-4); padding-block: var(--s-8); }
+  .hero-copy .lede { max-width: 42ch; }
+  .dot { color: var(--blue); }
+  .hero-media { align-self: stretch; min-height: 300px; display: grid; }
+
+  .list { padding-block: var(--s-7) var(--s-8); }
+
+  .grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-4);
+  }
+
+  .grid > :global(*) { flex: 1 1 200px; max-width: 236px; }
+
+  .empty { color: var(--grey); }
+
+  @media (max-width: 980px) {
+    .hero { padding-right: var(--gutter); }
+    .hero-grid { grid-template-columns: 1fr; gap: var(--s-6); }
+    .hero-copy { padding-block: var(--s-7) 0; }
+    .hero-media { min-height: 220px; margin-bottom: var(--s-7); }
+  }
+  @media (max-width: 720px) {
+    .grid { gap: 0; }
+    .grid > :global(*) { flex: 1 1 100%; max-width: none; border-radius: 0; margin-top: -1px; }
+  }
+</style>

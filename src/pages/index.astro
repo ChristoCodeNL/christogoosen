@@ -1,144 +1,151 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
+import Arrow from '../components/Arrow.astro';
+import ContentCard from '../components/ContentCard.astro';
+import HeroArt from '../components/HeroArt.astro';
+import Base from '../layouts/Base.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
-const posts = (await getCollection('blog'))
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 5);
+const posts = (await getCollection('blog')).filter((p) => !p.data.draft);
+const books = (await getCollection('books')).filter((b) => !b.data.draft);
 
-const books = (await getCollection('books'))
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 3);
+type FeedItem = {
+  href: string;
+  category: string;
+  title: string;
+  description: string;
+  meta?: string;
+  cta: string;
+  image?: ImageMetadata;
+  date: Date;
+};
+
+const feed: FeedItem[] = [
+  ...posts.map((p) => ({
+    href: `/essays/${p.id}/`,
+    category: p.data.category,
+    title: p.data.title,
+    description: p.data.description,
+    cta: p.data.category === 'Essay' ? 'Read essay' : 'Read note',
+    image: p.data.heroImage,
+    date: p.data.pubDate,
+  })),
+  ...books.map((b) => ({
+    href: `/books/${b.id}/`,
+    category: 'Book review',
+    title: b.data.title,
+    description: b.data.description,
+    meta: b.data.author,
+    cta: 'Read review',
+    image: b.data.cover,
+    date: b.data.pubDate,
+  })),
+].sort((a, b) => b.date.valueOf() - a.date.valueOf());
+
+const recent = feed.slice(0, 5);
+const latestEssay = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())[0];
 ---
-<!doctype html>
-<html lang="en">
-  <head>
-    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-  </head>
-  <body>
-    <Header />
-    <main>
-      <section class="intro">
-        <p class="tagline">On product management, antifragility,<br/>and building things that get stronger under pressure.</p>
-      </section>
+<Base title={`${SITE_TITLE} — Product leader, systems thinker`} description={SITE_DESCRIPTION}>
+  <section class="hero">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="t-eyebrow">Engineer mind. Human focus.</p>
+        <h1 class="t-hero">
+          Product leader.<br />
+          Systems thinker.<br />
+          Clear by design<span class="dot">.</span>
+        </h1>
+        <p class="t-intro lede">{SITE_DESCRIPTION}</p>
+        {latestEssay ? (
+          <a class="btn" href={`/essays/${latestEssay.id}/`}>Latest essay <Arrow /></a>
+        ) : (
+          <a class="btn" href="/essays">All essays <Arrow /></a>
+        )}
+      </div>
+      <div class="hero-media">
+        <HeroArt label="Light falling through a concrete oculus" />
+      </div>
+    </div>
+  </section>
 
-      <section class="section">
-        <div class="section-header">
-          <h2>Writing</h2>
-          <a href="/blog">All posts &rarr;</a>
-        </div>
-        <ol class="post-list">
-          {posts.map((post) => (
-            <li>
-              <a href={`/blog/${post.id}/`}>
-                <span class="post-title">{post.data.title}</span>
-                <span class="post-date"><FormattedDate date={post.data.pubDate} /></span>
-              </a>
-            </li>
-          ))}
-        </ol>
-      </section>
+  <section class="desk shell">
+    <div class="section-head">
+      <h2 class="t-section-label">Recent from the desk</h2>
+      <a class="link" href="/essays"><span>View all</span> <Arrow /></a>
+    </div>
 
-      {books.length > 0 && (
-        <section class="section">
-          <div class="section-header">
-            <h2>Books</h2>
-            <a href="/books">All reviews &rarr;</a>
-          </div>
-          <ol class="post-list">
-            {books.map((book) => (
-              <li>
-                <a href={`/books/${book.id}/`}>
-                  <span class="post-title">{book.data.title}</span>
-                  <span class="post-date">{book.data.author}</span>
-                </a>
-              </li>
-            ))}
-          </ol>
-        </section>
-      )}
-    </main>
-    <Footer />
-  </body>
-</html>
+    {recent.length > 0 ? (
+      <div class="grid">
+        {recent.map((item) => (
+          <ContentCard
+            href={item.href}
+            category={item.category}
+            title={item.title}
+            description={item.description}
+            meta={item.meta}
+            cta={item.cta}
+            image={item.image}
+          />
+        ))}
+      </div>
+    ) : (
+      <p class="t-card-desc empty">Nothing published yet. The first essay lands soon.</p>
+    )}
+  </section>
+</Base>
 
 <style>
-  .intro {
-    padding: 3rem 0 3.5rem;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 3rem;
+  .hero {
+    background: var(--card);
+    border-bottom: 1px solid var(--divider);
+    padding-left: max(var(--gutter), calc((100% - var(--shell)) / 2 + var(--gutter)));
   }
 
-  .tagline {
-    font-family: 'Fraunces', Georgia, serif;
-    font-size: 1.6rem;
-    font-weight: 300;
-    font-style: italic;
-    line-height: 1.4;
-    color: var(--text);
-    margin: 0;
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 460px) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--s-8);
   }
 
-  .section { margin-bottom: 3.5rem; }
+  .hero-copy {
+    display: grid;
+    justify-items: start;
+    gap: var(--s-4);
+    padding-block: var(--s-9);
+  }
 
-  .section-header {
+  .hero-copy .lede { max-width: 42ch; }
+  .dot { color: var(--blue); }
+
+  .hero-media {
+    align-self: stretch;
+    min-height: 420px;
+    display: grid;
+  }
+
+  .desk { padding-block: var(--s-7) var(--s-8); }
+
+  .grid {
     display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 1.25rem;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 0.5rem;
+    flex-wrap: wrap;
+    gap: var(--s-4);
   }
 
-  .section-header h2 {
-    font-size: 0.8rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    font-family: 'Lora', serif;
-    font-weight: 500;
-    margin: 0;
-    color: var(--text-muted);
+  .grid > :global(*) { flex: 1 1 200px; max-width: 236px; }
+
+  .empty { color: var(--grey); }
+
+
+  @media (max-width: 980px) {
+    .hero { padding-right: var(--gutter); }
+    .hero-grid { grid-template-columns: 1fr; gap: var(--s-6); }
+    .hero-copy { padding-block: var(--s-7) 0; }
+    .hero-media { min-height: 260px; margin-bottom: var(--s-7); }
   }
 
-  .section-header a {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    text-decoration: none;
-  }
-
-  .section-header a:hover { color: var(--accent); }
-
-  .post-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .post-list li { border-bottom: 1px solid var(--border); }
-
-  .post-list li a {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 1rem;
-    padding: 0.75rem 0;
-    text-decoration: none;
-    color: var(--text);
-    transition: color 0.2s ease;
-  }
-
-  .post-list li a:hover .post-title { color: var(--accent); }
-
-  .post-title { font-size: 1rem; }
-
-  .post-date {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    white-space: nowrap;
-    flex-shrink: 0;
+  @media (max-width: 720px) {
+    .grid { gap: 0; }
+    .grid > :global(*) { flex: 1 1 100%; max-width: none; border-radius: 0; margin-top: -1px; }
   }
 </style>

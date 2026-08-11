@@ -3,14 +3,15 @@ import rss from '@astrojs/rss';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
 export async function GET(context) {
-  const posts = await getCollection('blog');
-  const books = await getCollection('books');
+  const posts = (await getCollection('blog')).filter((p) => !p.data.draft);
+  const books = (await getCollection('books')).filter((b) => !b.data.draft);
 
   const postItems = posts.map((post) => ({
     title: post.data.title,
     description: post.data.description,
     pubDate: post.data.pubDate,
-    link: `/blog/${post.id}/`,
+    link: `/essays/${post.id}/`,
+    categories: [post.data.category],
   }));
 
   const bookItems = books.map((book) => ({
@@ -18,10 +19,12 @@ export async function GET(context) {
     description: book.data.description,
     pubDate: book.data.pubDate,
     link: `/books/${book.id}/`,
+    categories: ['Book review'],
   }));
 
-  const items = [...postItems, ...bookItems]
-    .sort((a, b) => b.pubDate.valueOf() - a.pubDate.valueOf());
+  const items = [...postItems, ...bookItems].sort(
+    (a, b) => b.pubDate.valueOf() - a.pubDate.valueOf(),
+  );
 
   return rss({
     title: SITE_TITLE,

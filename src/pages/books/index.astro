@@ -1,85 +1,212 @@
 ---
+import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
-import BaseHead from '../../components/BaseHead.astro';
-import Footer from '../../components/Footer.astro';
-import Header from '../../components/Header.astro';
+import Arrow from '../../components/Arrow.astro';
+import CardArt from '../../components/CardArt.astro';
+import HeroArt from '../../components/HeroArt.astro';
+import Rating from '../../components/Rating.astro';
+import Base from '../../layouts/Base.astro';
 import { SITE_TITLE } from '../../consts';
 
 const books = (await getCollection('books'))
+  .filter((b) => !b.data.draft)
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const topics = ['Product', 'Leadership', 'Systems', 'Design', 'Strategy'].filter((t) =>
+  books.some((b) => b.data.topic === t),
+);
+
+const description =
+  'Books shape how I think about product, systems, people and the world. Here I review the ones that challenge my assumptions or teach me something I can apply.';
 ---
-<!doctype html>
-<html lang="en">
-  <head>
-    <BaseHead title={`Books — ${SITE_TITLE}`} description="Book reviews." />
-  </head>
-  <body>
-    <Header />
-    <main>
-      <h1>Books</h1>
-      <ol class="book-list">
-        {books.map((book) => (
-          <li>
-            <a href={`/books/${book.id}/`}>
-              <span class="book-title">{book.data.title}</span>
-              <span class="book-author">{book.data.author}</span>
-              <span class="book-rating">{'★'.repeat(book.data.rating)}{'☆'.repeat(5 - book.data.rating)}</span>
-            </a>
-          </li>
+<Base
+  title={`Books — ${SITE_TITLE}`}
+  description={description}
+  quote="Good books don't just inform. They recalibrate how you see problems and what's possible."
+>
+  <section class="hero">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="t-eyebrow">Book reviews</p>
+        <h1 class="t-hero">Reading with purpose<span class="dot">.</span></h1>
+        <p class="t-intro lede">{description}</p>
+        <a class="link" href="#approach"><span>About my approach</span> <Arrow /></a>
+      </div>
+      <div class="hero-media"><HeroArt /></div>
+    </div>
+  </section>
+
+  <section class="shell list">
+    {topics.length > 0 && (
+      <div class="filters" role="group" aria-label="Filter reviews by topic">
+        <button class="filter t-nav is-active" type="button" data-topic="all">All reviews</button>
+        {topics.map((t) => (
+          <button class="filter t-nav" type="button" data-topic={t}>{t}</button>
         ))}
-      </ol>
-    </main>
-    <Footer />
-  </body>
-</html>
+      </div>
+    )}
+
+    {books.length > 0 ? (
+      <div class="grid" id="book-grid">
+        {books.map((book) => (
+          <article class="book" data-topic={book.data.topic ?? ''}>
+            <a class="hit" href={`/books/${book.id}/`}><span class="sr-only">{book.data.title}</span></a>
+            <div class="cover">
+              {book.data.cover ? (
+                <Image src={book.data.cover} alt="" width={340} height={480} />
+              ) : (
+                <div class="fallback"><CardArt seed={book.data.title} /></div>
+              )}
+            </div>
+            <p class="t-category">Book review</p>
+            <h2 class="t-card-title">{book.data.title}</h2>
+            <p class="author">{book.data.author}</p>
+            <Rating value={book.data.rating} />
+            <p class="t-card-desc desc">{book.data.description}</p>
+            <p class="link foot"><span>Read review</span> <Arrow /></p>
+          </article>
+        ))}
+      </div>
+    ) : (
+      <p class="t-card-desc empty">No reviews published yet.</p>
+    )}
+
+    <div class="approach" id="approach">
+      <span class="icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 6.5C10 4.8 7.5 4.5 4 5v13c3.5-.5 6 0 8 1.5 2-1.5 4.5-2 8-1.5V5c-3.5-.5-6-.2-8 1.5z" />
+          <path d="M12 6.5V19.5" />
+        </svg>
+      </span>
+      <div>
+        <p class="t-newsletter">My approach to reviews</p>
+        <p class="t-card-desc">
+          I focus on what the book gets right, what it misses, and the ideas I'm applying in my work.
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.filter');
+  const cards = document.querySelectorAll<HTMLElement>('#book-grid .book');
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const topic = btn.dataset.topic;
+      buttons.forEach((b) => b.classList.toggle('is-active', b === btn));
+      cards.forEach((card) => {
+        const match = topic === 'all' || card.dataset.topic === topic;
+        card.hidden = !match;
+      });
+    });
+  });
+</script>
 
 <style>
-  h1 { margin-bottom: 2.5rem; }
-
-  .book-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  .hero {
+    background: var(--card);
+    border-bottom: 1px solid var(--divider);
+    padding-left: max(var(--gutter), calc((100% - var(--shell)) / 2 + var(--gutter)));
   }
-
-  .book-list li { border-bottom: 1px solid var(--border); }
-
-  .book-list li a {
+  .hero-grid {
     display: grid;
-    grid-template-columns: 1fr auto auto;
-    gap: 0 1.5rem;
-    padding: 1.25rem 0;
-    text-decoration: none;
-    color: var(--text);
-    align-items: baseline;
+    grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--s-8);
+  }
+  .hero-copy { display: grid; justify-items: start; gap: var(--s-4); padding-block: var(--s-8); }
+  .hero-copy .lede { max-width: 44ch; }
+  .dot { color: var(--blue); }
+  .hero-media { align-self: stretch; min-height: 320px; display: grid; }
+
+  .list { padding-block: var(--s-6) var(--s-8); }
+
+  .filters {
+    display: flex;
+    gap: var(--s-6);
+    align-items: center;
+    border-bottom: 1px solid var(--divider);
+    margin-bottom: var(--s-6);
+    overflow-x: auto;
   }
 
-  .book-list li a:hover .book-title { color: var(--accent); }
+  .filter {
+    background: none;
+    border: 0;
+    padding: 0 0 12px;
+    color: var(--grey);
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .filter:hover { color: var(--ink); }
+  .filter.is-active { color: var(--blue); border-bottom-color: var(--blue); }
 
-  .book-title {
-    font-family: 'Fraunces', Georgia, serif;
-    font-size: 1.1rem;
-    font-weight: 400;
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--s-4);
   }
 
-  .book-author {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    font-style: italic;
+  .book {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: var(--s-2);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--s-4);
+    transition: border-color 0.18s var(--ease);
   }
+  .book:hover { border-color: var(--blue); }
+  .book:hover .foot svg { transform: translateX(4px); }
+  .book:has(.hit:focus-visible) { border-color: var(--blue); }
+  .book[hidden] { display: none; }
 
-  .book-rating {
-    font-size: 0.75rem;
-    color: var(--accent);
-    letter-spacing: 0.05em;
-  }
+  .hit { position: absolute; inset: 0; z-index: 1; }
 
-  @media (max-width: 480px) {
-    .book-list li a {
-      grid-template-columns: 1fr auto;
-      grid-template-rows: auto auto;
-    }
-    .book-author { grid-column: 1; grid-row: 2; }
-    .book-rating { grid-column: 2; grid-row: 1; }
+  .cover {
+    aspect-ratio: 2 / 3;
+    background: var(--page);
+    border: 1px solid var(--divider);
+    overflow: hidden;
+    margin-bottom: var(--s-2);
   }
+  .cover :global(img) { width: 100%; height: 100%; object-fit: cover; }
+  .fallback { height: 100%; }
+  .fallback :global(.card-art) { height: 100%; aspect-ratio: auto; }
+
+  .author { font-size: 13px; line-height: 18px; color: var(--grey); }
+  .desc { margin-top: var(--s-2); }
+  .foot { margin-top: var(--s-3); }
+
+  .approach {
+    display: flex;
+    gap: var(--s-4);
+    align-items: flex-start;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--s-5);
+    margin-top: var(--s-7);
+  }
+  .approach .icon { color: var(--blue); flex: none; }
+  .approach div { display: grid; gap: 4px; }
+
+  .empty { color: var(--grey); }
+
+  @media (max-width: 1180px) { .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  @media (max-width: 980px) {
+    .hero { padding-right: var(--gutter); }
+    .hero-grid { grid-template-columns: 1fr; gap: var(--s-6); }
+    .hero-copy { padding-block: var(--s-7) 0; }
+    .hero-media { min-height: 220px; margin-bottom: var(--s-7); }
+    .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (max-width: 720px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 460px) { .grid { grid-template-columns: 1fr; } }
 </style>

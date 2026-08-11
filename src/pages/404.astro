@@ -1,0 +1,26 @@
+---
+import Arrow from '../components/Arrow.astro';
+import Base from '../layouts/Base.astro';
+import { SITE_TITLE } from '../consts';
+---
+<Base title={`Page not found — ${SITE_TITLE}`} description="That page does not exist.">
+  <section class="page shell">
+    <p class="t-eyebrow">404</p>
+    <h1 class="t-hero">This page doesn't exist<span class="dot">.</span></h1>
+    <p class="t-intro">
+      The link is either wrong or the page has moved. The essays are the best place to pick up again.
+    </p>
+    <a class="btn" href="/essays">Browse essays <Arrow /></a>
+  </section>
+</Base>
+
+<style>
+  .page {
+    display: grid;
+    justify-items: start;
+    gap: var(--s-4);
+    padding-block: var(--s-9);
+    max-width: 620px;
+  }
+  .dot { color: var(--blue); }
+</style>

@@ -1,30 +1,164 @@
 ---
-import { SITE_TITLE } from '../consts';
+import Arrow from './Arrow.astro';
+import { CONTACT_EMAIL, LINKEDIN_URL, NEWSLETTER_ACTION, SITE_TITLE } from '../consts';
+
+interface Props {
+  quote?: string;
+}
+
+const {
+  quote = 'Good products are not built by accident. They are designed, argued for, and iterated into reality.',
+} = Astro.props;
+
+const year = new Date().getFullYear();
 ---
-<footer>
-  <div class="footer-inner">
-    <span>&copy; {new Date().getFullYear()} {SITE_TITLE}</span>
-    <a href="/rss.xml">RSS</a>
+<footer class="site-footer">
+  <div class="shell">
+    <div class="band">
+      <blockquote class="quote">
+        <span class="mark" aria-hidden="true">&ldquo;</span>
+        <p>{quote}</p>
+      </blockquote>
+
+      <div class="newsletter">
+        <span class="icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="2.5" y="5" width="19" height="14" />
+            <path d="M2.5 6l9.5 7 9.5-7" />
+          </svg>
+        </span>
+        <div class="copy">
+          <p class="t-newsletter">Thoughts in your inbox</p>
+          <p class="t-card-desc">Essays, notes and reading lists. No spam. Just signal.</p>
+        </div>
+      </div>
+
+      {NEWSLETTER_ACTION ? (
+        <form class="signup" action={NEWSLETTER_ACTION} method="post" target="_blank">
+          <label class="sr-only" for="newsletter-email">Email address</label>
+          <input
+            class="field"
+            id="newsletter-email"
+            type="email"
+            name="email"
+            required
+            placeholder="Enter your email"
+            autocomplete="email"
+          />
+          <button class="btn" type="submit">Subscribe <Arrow /></button>
+        </form>
+      ) : (
+        <p class="signup-fallback t-card-desc">
+          The list is not open yet. Until it is, follow along by
+          <a href="/rss.xml">RSS</a> or say hello at
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+        </p>
+      )}
+    </div>
+
+    <hr class="rule" />
+
+    <div class="bottom t-footer">
+      <span>&copy; {year} {SITE_TITLE}</span>
+      <nav class="bottom-links" aria-label="Footer">
+        <a href="/work">Speaking / Advisory</a>
+        <a href="/privacy">Privacy</a>
+        <a href={`mailto:${CONTACT_EMAIL}`}>Contact</a>
+        <a href="/rss.xml">RSS</a>
+        <a href={LINKEDIN_URL} class="social" rel="me noopener" target="_blank">
+          <span class="sr-only">LinkedIn</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M4.98 3.5A2.5 2.5 0 1 1 0 3.5a2.5 2.5 0 0 1 4.98 0zM.24 8.25h4.5V24h-4.5V8.25zM8.5 8.25h4.31v2.15h.06c.6-1.13 2.07-2.32 4.26-2.32 4.56 0 5.4 3 5.4 6.9V24h-4.5v-7.9c0-1.89-.03-4.32-2.63-4.32-2.63 0-3.03 2.06-3.03 4.18V24H8.5V8.25z" />
+          </svg>
+        </a>
+      </nav>
+    </div>
   </div>
 </footer>
 
 <style>
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 1.5rem 1rem;
-    margin-top: 4rem;
+  .site-footer {
+    margin-top: var(--s-9);
+    background: var(--card);
+    border-top: 1px solid var(--divider);
   }
 
-  .footer-inner {
-    max-width: var(--max-width);
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
+  .band {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
     align-items: center;
-    font-size: 0.85rem;
-    color: var(--text-muted);
+    gap: var(--s-6);
+    padding-block: var(--s-6);
   }
 
-  a { color: var(--text-muted); text-decoration: none; }
-  a:hover { color: var(--accent); }
+  .quote {
+    display: flex;
+    gap: var(--s-3);
+    margin: 0;
+    padding-right: var(--s-6);
+    border-right: 1px solid var(--divider);
+  }
+
+  .quote .mark {
+    font-family: var(--font-display);
+    font-size: 30px;
+    line-height: 0.9;
+    font-weight: 700;
+    color: var(--blue);
+  }
+
+  .quote p {
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--charcoal);
+  }
+
+  .newsletter {
+    display: flex;
+    gap: var(--s-3);
+    align-items: flex-start;
+    padding-right: var(--s-6);
+    border-right: 1px solid var(--divider);
+  }
+
+  .newsletter .icon { color: var(--blue); flex: none; }
+  .copy { display: grid; gap: 4px; }
+
+  .signup { display: flex; gap: var(--s-2); }
+  .signup .field { min-width: 0; }
+  .signup .btn { white-space: nowrap; }
+
+  .signup-fallback a { text-decoration: underline; text-underline-offset: 2px; }
+
+  .bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding-block: var(--s-5);
+    flex-wrap: wrap;
+  }
+
+  .bottom-links {
+    display: flex;
+    align-items: center;
+    gap: var(--s-5);
+    flex-wrap: wrap;
+  }
+
+  .bottom-links a { color: var(--grey); }
+  .bottom-links a:hover { color: var(--blue); }
+  .social { display: inline-flex; color: var(--ink); }
+
+  @media (max-width: 900px) {
+    .band { grid-template-columns: 1fr; gap: var(--s-5); }
+    .quote, .newsletter { border-right: 0; padding-right: 0; }
+    .quote { padding-bottom: var(--s-5); border-bottom: 1px solid var(--divider); }
+  }
+
+  @media (max-width: 560px) {
+    .signup { flex-direction: column; align-items: stretch; }
+    .signup .btn { justify-content: center; }
+    .bottom { flex-direction: column; align-items: flex-start; }
+  }
 </style>

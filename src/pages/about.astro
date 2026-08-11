@@ -1,22 +1,263 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
+import { Image } from 'astro:assets';
+import Arrow from '../components/Arrow.astro';
+import Base from '../layouts/Base.astro';
+import portrait from '../assets/christo-portrait.jpg';
 import { SITE_TITLE } from '../consts';
+
+const description =
+  'Christo Goosen is a product leader who builds systems that help people do complex work faster, clearer and with less friction.';
+
+const guides = [
+  {
+    title: 'Outcomes over output',
+    body: 'Focus on the right problems and measurable impact.',
+    icon: 'target',
+  },
+  {
+    title: 'Systems over silos',
+    body: 'Design for flow, leverage and long-term scale.',
+    icon: 'nodes',
+  },
+  {
+    title: 'People in the loop',
+    body: 'Build with empathy. Make it usable. Earn trust.',
+    icon: 'people',
+  },
+  {
+    title: 'Keep learning',
+    body: 'Read widely, think critically, improve constantly.',
+    icon: 'book',
+  },
+];
+
+const experience = [
+  {
+    title: 'Product Director, sennder',
+    body: 'Building the internal and operator platforms that power digital road freight across Europe.',
+  },
+  {
+    title: 'Design and product leadership',
+    body: '10+ years building products, teams and systems across logistics, media and technology.',
+  },
+  {
+    title: 'Engineering and design',
+    body: 'Background in industrial design and interaction design with a strong engineering foundation.',
+  },
+  {
+    title: 'Always a builder',
+    body: 'I enjoy turning ambiguity into something useful people want to use.',
+  },
+];
+
+const values = [
+  { title: 'Clarity', body: 'Clear thinking creates clear outcomes.' },
+  { title: 'Leverage', body: 'Good systems multiply good teams.' },
+  { title: 'Curiosity', body: 'Stay curious. Ask better questions.' },
+  { title: 'Integrity', body: "Do the right thing. Even when it's hard." },
+];
 ---
-<!doctype html>
-<html lang="en">
-  <head>
-    <BaseHead title={`About — ${SITE_TITLE}`} description="About Christo Goosen." />
-  </head>
-  <body>
-    <Header />
-    <main>
-      <article class="prose">
-        <h1>About</h1>
-        <p>Write something here about yourself.</p>
-      </article>
-    </main>
-    <Footer />
-  </body>
-</html>
+<Base
+  title={`About — ${SITE_TITLE}`}
+  description={description}
+  quote="Product is how you change reality. Strategy is how you choose where to start."
+>
+  <section class="hero">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="t-eyebrow">About Christo</p>
+        <h1 class="t-hero">Engineer mind.<br />Human focus<span class="dot">.</span></h1>
+        <p class="t-intro lede">
+          I'm a product leader who builds systems that help people do complex work: faster, clearer
+          and with less friction. I care about outcomes, operating leverage and the craft of building
+          things that last.
+        </p>
+        <a class="link" href="/essays"><span>Read my writing</span> <Arrow /></a>
+      </div>
+      <div class="hero-media">
+        <Image src={portrait} alt="Christo Goosen" width={820} height={1024} />
+      </div>
+    </div>
+  </section>
+
+  <section class="shell cols">
+    <div class="col">
+      <h2 class="t-section-label">Who I am</h2>
+      <div class="prose-sm">
+        <p>I'm South African, based in the Netherlands.</p>
+        <p>
+          I lead product and operations at sennder, building the tools and workflows that power a
+          digital road-freight business across Europe.
+        </p>
+        <p>
+          I have an engineering education, a design background and a systems mindset. I like
+          structure, clarity and making the complicated feel simple.
+        </p>
+        <p>Outside of work, I write, read and walk, usually with a notebook.</p>
+      </div>
+    </div>
+
+    <div class="col">
+      <h2 class="t-section-label">What guides me</h2>
+      <ul class="guides">
+        {guides.map((g) => (
+          <li>
+            <span class="ico" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+                {g.icon === 'target' && (
+                  <>
+                    <circle cx="12" cy="12" r="8" />
+                    <circle cx="12" cy="12" r="3" />
+                  </>
+                )}
+                {g.icon === 'nodes' && (
+                  <>
+                    <circle cx="5" cy="12" r="2" />
+                    <circle cx="19" cy="6" r="2" />
+                    <circle cx="19" cy="18" r="2" />
+                    <path d="M7 11l10-4M7 13l10 4" />
+                  </>
+                )}
+                {g.icon === 'people' && (
+                  <>
+                    <circle cx="9" cy="9" r="3" />
+                    <path d="M3 19c0-3 2.7-5 6-5s6 2 6 5" />
+                    <path d="M16 7a3 3 0 0 1 0 6" />
+                  </>
+                )}
+                {g.icon === 'book' && (
+                  <>
+                    <rect x="4" y="4" width="16" height="16" />
+                    <path d="M8 9h8M8 13h8M8 17h5" />
+                  </>
+                )}
+              </svg>
+            </span>
+            <div>
+              <p class="t-card-title small">{g.title}</p>
+              <p class="t-card-desc">{g.body}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="col">
+      <h2 class="t-section-label">Experience highlights</h2>
+      <ol class="timeline">
+        {experience.map((e) => (
+          <li>
+            <p class="t-card-title small">{e.title}</p>
+            <p class="t-card-desc">{e.body}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="shell">
+    <div class="values">
+      <h2 class="t-section-label">Core values</h2>
+      {values.map((v) => (
+        <div class="value">
+          <p class="t-card-title small">{v.title}</p>
+          <p class="t-card-desc">{v.body}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    background: var(--card);
+    border-bottom: 1px solid var(--divider);
+    padding-left: max(var(--gutter), calc((100% - var(--shell)) / 2 + var(--gutter)));
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--s-8);
+  }
+
+  .hero-copy { display: grid; justify-items: start; gap: var(--s-4); padding-block: var(--s-8); }
+  .hero-copy .lede { max-width: 44ch; }
+  .dot { color: var(--blue); }
+
+  .hero-media { align-self: stretch; height: clamp(360px, 42vw, 520px); overflow: hidden; }
+  .hero-media :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; }
+
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-8);
+    padding-block: var(--s-8);
+  }
+
+  .col { display: grid; gap: var(--s-5); align-content: start; }
+
+  .prose-sm { display: grid; gap: var(--s-4); font-size: 14px; line-height: 21px; }
+
+  .guides, .timeline { list-style: none; margin: 0; padding: 0; display: grid; }
+
+  .guides li {
+    display: flex;
+    gap: var(--s-4);
+    padding-block: var(--s-4);
+    border-bottom: 1px solid var(--divider);
+  }
+  .guides li:last-child { border-bottom: 0; }
+  .ico { color: var(--blue); flex: none; }
+
+  .timeline li {
+    position: relative;
+    padding: 0 0 var(--s-5) var(--s-5);
+    border-left: 1px solid var(--divider);
+  }
+  .timeline li:last-child { padding-bottom: 0; }
+  .timeline li::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 5px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--blue);
+  }
+
+  .small { font-size: 15px; line-height: 20px; margin-bottom: 4px; }
+
+  .values {
+    display: grid;
+    grid-template-columns: auto repeat(4, minmax(0, 1fr));
+    gap: var(--s-6);
+    align-items: start;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--s-5);
+    margin-bottom: var(--s-8);
+  }
+
+  .values > .t-section-label { padding-right: var(--s-5); border-right: 1px solid var(--divider); }
+  .value { border-right: 1px solid var(--divider); padding-right: var(--s-5); }
+  .value:last-child { border-right: 0; }
+
+  @media (max-width: 980px) {
+    .hero { padding-right: var(--gutter); }
+    .hero-grid { grid-template-columns: 1fr; gap: 0; }
+    .hero-copy { padding-block: var(--s-7) var(--s-6); }
+    .hero-media { height: clamp(280px, 70vw, 400px); }
+    .cols { grid-template-columns: 1fr; gap: var(--s-7); }
+    .values { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .values > .t-section-label { grid-column: 1 / -1; border-right: 0; padding-right: 0; }
+    .value { border-right: 0; padding-right: 0; }
+  }
+
+  @media (max-width: 560px) {
+    .values { grid-template-columns: 1fr; }
+  }
+</style>
