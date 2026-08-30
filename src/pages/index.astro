@@ -1,9 +1,10 @@
 ---
+import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import Arrow from '../components/Arrow.astro';
 import ContentCard from '../components/ContentCard.astro';
-import HeroArt from '../components/HeroArt.astro';
 import Base from '../layouts/Base.astro';
+import heroImage from '../assets/hero-circuit.png';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
 const posts = (await getCollection('blog')).filter((p) => !p.data.draft);
@@ -47,24 +48,23 @@ const latestEssay = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDa
 ---
 <Base title={`${SITE_TITLE} — Product leader, systems thinker`} description={SITE_DESCRIPTION}>
   <section class="hero">
-    <div class="hero-grid">
-      <div class="hero-copy">
-        <p class="t-eyebrow">Engineer mind. Human focus.</p>
-        <h1 class="t-hero">
-          Product leader.<br />
-          Systems thinker.<br />
-          Clear by design<span class="dot">.</span>
-        </h1>
-        <p class="t-intro lede">{SITE_DESCRIPTION}</p>
-        {latestEssay ? (
-          <a class="btn" href={`/essays/${latestEssay.id}/`}>Latest essay <Arrow /></a>
-        ) : (
-          <a class="btn" href="/essays">All essays <Arrow /></a>
-        )}
-      </div>
-      <div class="hero-media">
-        <HeroArt label="Light falling through a concrete oculus" />
-      </div>
+    <div class="hero-media" aria-hidden="true">
+      <Image src={heroImage} alt="" width={1672} height={941} loading="eager" fetchpriority="high" />
+      <div class="hero-scrim"></div>
+    </div>
+    <div class="hero-copy">
+      <p class="t-eyebrow">Engineer mind. Human focus.</p>
+      <h1 class="t-hero">
+        Product leader.<br />
+        Systems thinker.<br />
+        Clear by design<span class="dot">.</span>
+      </h1>
+      <p class="t-intro lede">{SITE_DESCRIPTION}</p>
+      {latestEssay ? (
+        <a class="btn" href={`/essays/${latestEssay.id}/`}>Latest essay <Arrow /></a>
+      ) : (
+        <a class="btn" href="/essays">All essays <Arrow /></a>
+      )}
     </div>
   </section>
 
@@ -95,34 +95,62 @@ const latestEssay = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDa
 </Base>
 
 <style>
+  /* The image is a full-bleed layer; a left-to-right white scrim fades it out
+     under the headline so the copy sits on clean white and the chip stays
+     legible on the right. */
   .hero {
+    position: relative;
+    isolation: isolate;
     background: var(--card);
     border-bottom: 1px solid var(--divider);
-    padding-left: max(var(--gutter), calc((100% - var(--shell)) / 2 + var(--gutter)));
+    overflow: hidden;
+    min-height: clamp(420px, 44vw, 560px);
+    display: grid;
+    align-items: center;
   }
 
-  .hero-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 460px) minmax(0, 1fr);
-    align-items: center;
-    gap: var(--s-8);
+  .hero-media {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: #eef0f4;
+  }
+
+  .hero-media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* The chip sits right of centre in the source, so anchor there: the crop
+       eats the empty left half rather than the subject. */
+    object-position: 72% 50%;
+  }
+
+  .hero-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to right,
+      #fff 0%,
+      #fff 26%,
+      rgba(255, 255, 255, 0.94) 40%,
+      rgba(255, 255, 255, 0.6) 55%,
+      rgba(255, 255, 255, 0) 72%
+    );
   }
 
   .hero-copy {
+    position: relative;
     display: grid;
     justify-items: start;
     gap: var(--s-4);
-    padding-block: var(--s-9);
+    width: 100%;
+    max-width: var(--shell);
+    margin-inline: auto;
+    padding: var(--s-8) var(--gutter);
   }
 
-  .hero-copy .lede { max-width: 42ch; }
+  .hero-copy > * { max-width: 42ch; }
   .dot { color: var(--blue); }
-
-  .hero-media {
-    align-self: stretch;
-    min-height: 420px;
-    display: grid;
-  }
 
   .desk { padding-block: var(--s-7) var(--s-8); }
 
@@ -137,11 +165,31 @@ const latestEssay = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDa
   .empty { color: var(--grey); }
 
 
-  @media (max-width: 980px) {
-    .hero { padding-right: var(--gutter); }
-    .hero-grid { grid-template-columns: 1fr; gap: var(--s-6); }
-    .hero-copy { padding-block: var(--s-7) 0; }
-    .hero-media { min-height: 260px; margin-bottom: var(--s-7); }
+  /* Below this width there is not enough room to overlay: the chip collides
+     with the body copy. Stack instead, copy first, image as its own block. */
+  @media (max-width: 900px) {
+    .hero {
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: visible;
+    }
+
+    .hero-copy { order: 1; padding: var(--s-7) var(--gutter) var(--s-6); }
+
+    .hero-media {
+      order: 2;
+      position: relative;
+      inset: auto;
+      z-index: 0;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+    }
+
+    .hero-media :global(img) { object-position: 72% 50%; }
+
+    .hero-scrim { display: none; }
   }
 
   @media (max-width: 720px) {

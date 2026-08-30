@@ -5,7 +5,7 @@ import { z } from 'astro/zod';
 // The folder stays `blog` so the Obsidian vault path does not change.
 // The route it publishes to is /essays.
 const blog = defineCollection({
-  loader: glob({ base: './src/content/blog', pattern: '*/*.{md,mdx}' }),
+  loader: glob({ base: './src/content/blog', pattern: '*.{md,mdx}' }),
   schema: ({ image }) =>
     z.object({
       title: z.string(),
@@ -21,7 +21,7 @@ const blog = defineCollection({
 });
 
 const books = defineCollection({
-  loader: glob({ base: './src/content/books', pattern: '*/*.{md,mdx}' }),
+  loader: glob({ base: './src/content/books', pattern: '*.{md,mdx}' }),
   schema: ({ image }) =>
     z.object({
       title: z.string(),

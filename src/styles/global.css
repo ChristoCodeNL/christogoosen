@@ -147,7 +147,7 @@ button { font: inherit; }
 
 .t-hero {
   font-family: var(--font-display);
-  font-size: 48px; line-height: 46px;
+  font-size: 48px; line-height: 52px;
   font-weight: 700; letter-spacing: -0.035em;
   color: var(--ink);
 }
@@ -338,7 +338,7 @@ button { font: inherit; }
 /* --- Mobile type scale (EXTENSION) ---------------------------------------- */
 
 @media (max-width: 600px) {
-  .t-hero { font-size: 34px; line-height: 34px; }
+  .t-hero { font-size: 34px; line-height: 38px; }
   .t-wordmark { font-size: 16px; letter-spacing: 0.18em; }
   .prose { font-size: 16px; }
   .prose h2 { font-size: 22px; }
