@@ -4,6 +4,7 @@ description: The first "official" post on christogoosen.com
 pubDate: 2026-09-05
 category: Essay
 draft: false
+heroImage: ./images/why-this-site.png
 ---
 ### Why this site? And why now?
 

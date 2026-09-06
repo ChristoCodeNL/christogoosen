@@ -22,7 +22,7 @@ const { href, category, title, description, meta, cta = 'Read', image } = Astro.
 
   <div class="media">
     {image ? (
-      <Image src={image} alt="" width={480} height={336} />
+      <Image src={image} alt="" width={640} />
     ) : (
       <CardArt seed={title} />
     )}
