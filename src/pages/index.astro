@@ -113,16 +113,19 @@ const latestEssay = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDa
     position: absolute;
     inset: 0;
     z-index: -1;
-    background: #eef0f4;
+    /* The source has a pure white background, so it blends into the hero
+       with no visible edge. */
+    background: var(--card);
   }
 
   .hero-media :global(img) {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    /* The chip sits right of centre in the source, so anchor there: the crop
-       eats the empty left half rather than the subject. */
-    object-position: 72% 50%;
+    /* `contain`, not `cover`: the chip's heat-sink fins reach the top and
+       bottom of the frame, so any vertical crop clips them. Anchored right
+       so the artwork sits clear of the headline. */
+    object-fit: contain;
+    object-position: 100% 50%;
   }
 
   .hero-scrim {
@@ -187,7 +190,7 @@ const latestEssay = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDa
       overflow: hidden;
     }
 
-    .hero-media :global(img) { object-position: 72% 50%; }
+    .hero-media :global(img) { object-fit: cover; object-position: 50% 50%; }
 
     .hero-scrim { display: none; }
   }
